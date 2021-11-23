@@ -1,0 +1,27 @@
+name: nancy
+on:
+  workflow_call:
+    inputs:
+      go:
+        description: 'Go version'
+        default: 1.17
+        required: false
+        type: string
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.4.0
+
+      - name: Install Go
+        uses: actions/setup-go@v2.1.4
+        with:
+          go-version: ${{ inputs.go }}
+
+      - name: List dependencies
+        run: go list -json -m all > go.list
+
+      - name: Run nancy
+        uses: sonatype-nexus-community/nancy-github-action@v1.0.2

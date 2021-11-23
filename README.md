@@ -5,7 +5,6 @@ Go faster [reusable workflows](https://docs.github.com/en/actions/learn-github-a
 ## Caveats
 
 1) Can't customize test matrix (e.g. add go version or platform)
-2) Can't skip workflows
 
 ## Example
 
@@ -20,10 +19,19 @@ on:
   workflow_dispatch:
 
 # See https://github.com/go-faster/x
-# Includes test, coverage, golangci-lint, commit lint, generate checks
 jobs:
-  ci:
-    uses: go-faster/x/.github/workflows/ci.yml@main
+  test:
+    uses: go-faster/x/.github/workflows/test.yml@main
+  cover:
+    uses: go-faster/x/.github/workflows/cover.yml@main
+  lint:
+    uses: go-faster/x/.github/workflows/lint.yml@main
+  commit:
+    uses: go-faster/x/.github/workflows/commit.yml@main
+  nancy:
+    uses: go-faster/x/.github/workflows/nancy.yml@main
+  codeql:
+    uses: go-faster/x/.github/workflows/codeql.yml@main
 ```
 
 Add `.github/workflows/pkg.yml`
