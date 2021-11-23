@@ -4,7 +4,7 @@ on:
   workflow_call:
 
 jobs:
-  pkg:
+  fetch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -12,7 +12,7 @@ jobs:
         id: vars
         run: |
           echo ::set-output name=tag::${GITHUB_REF#refs/*/}
-          echo ::set-output name=module::$(cat go.mod | head -n 1 | awk '{print $2})
+          echo ::set-output name=module::$(cat go.mod | head -n 1 | awk '{print $2}')
       - name: curl
         run: |
           curl --show-error --fail -w "HTTP %{http_code}\n" -o - 'https://pkg.go.dev/fetch/${{ steps.vars.outputs.module }}@${{ steps.vars.outputs.tag }}' \
