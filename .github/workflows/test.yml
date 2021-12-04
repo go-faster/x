@@ -59,8 +59,9 @@ jobs:
           restore-keys: |
             test-${{ runner.os }}-${{ matrix.arch }}-go-${{ matrix.go }}-
 
+      # Install gotestfmt on the VM running the action.
       - name: Set up gotestfmt
-        run: go install github.com/haveyoudebuggedit/gotestfmt/cmd/gotestfmt@latest
+        uses: haveyoudebuggedit/gotestfmt-action@v1
 
       - name: Run tests
         env:
