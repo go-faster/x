@@ -23,7 +23,6 @@ jobs:
           - windows-latest
         go:
           - ${{ inputs.go }}
-          - 1.18.0-beta1
         include:
           - arch: 386
             runner: ubuntu-latest
@@ -35,6 +34,9 @@ jobs:
           - arch: arm64
             runner: self-hosted
             go: ${{ inputs.go }}
+          - arch: amd64
+            runner: ubuntu-latest
+            go: 1.18.0-beta1
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.4.0
