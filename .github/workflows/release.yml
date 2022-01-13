@@ -16,8 +16,9 @@ jobs:
       - name: curl
         uses: nick-invision/retry@v2
         with:
-          timeout_minutes: 2
-          max_attempts: 3
+          timeout_minutes: 30
+          retry_wait_seconds: 30
+          max_attempts: 10
           command: |
             curl --show-error --fail -w "HTTP %{http_code}\n" -o - 'https://pkg.go.dev/fetch/${{ steps.vars.outputs.module }}@${{ steps.vars.outputs.tag }}' \
               -X 'POST' \
