@@ -31,10 +31,9 @@ jobs:
             runner: ubuntu-latest
             flags: "-race"
             go: ${{ inputs.go }}
-# TODO(ernado): enable
-#          - arch: arm64
-#            runner: self-hosted
-#            go: ${{ inputs.go }}
+          - arch: arm64
+            runner: self-hosted
+            go: ${{ inputs.go }}
           - arch: amd64
             runner: ubuntu-latest
             go: 1.18.0-beta1
