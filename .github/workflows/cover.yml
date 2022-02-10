@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Install Go
-        uses: actions/setup-go@v2.1.5
+        uses: actions/setup-go@v2.2.0
         with:
           go-version: ${{ inputs.go }}
 
