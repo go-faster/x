@@ -37,7 +37,7 @@ jobs:
             go: ${{ inputs.go }}
           - arch: amd64
             runner: ubuntu-latest
-            go: 1.18.0-beta1
+            go: 1.18
     steps:
       - name: Checkout code
         uses: actions/checkout@v2.4.0
@@ -45,7 +45,6 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2.2.0
         with:
-          stable: false
           go-version: ${{ matrix.go }}
 
       - name: Get Go environment
