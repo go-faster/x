@@ -37,7 +37,7 @@ jobs:
             go: ${{ inputs.go }}
           - arch: amd64
             runner: ubuntu-latest
-            go: 1.18
+            go: 1.18.0-rc.1
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
