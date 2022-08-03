@@ -5,13 +5,13 @@ on:
     inputs:
       go:
         description: 'Go version'
-        default: 1.18
+        default: 1.19
         required: false
         type: string
 
 jobs:
   analyze:
-    timeout-minutes: 5
+    timeout-minutes: 30
     name: analyze
     runs-on: ubuntu-latest
     permissions:

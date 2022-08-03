@@ -10,7 +10,7 @@ on:
 
 jobs:
   run:
-    timeout-minutes: 5
+    timeout-minutes: 30
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: true
