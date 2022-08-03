@@ -23,7 +23,7 @@ jobs:
           - macos-latest
           - windows-latest
         go:
-          - 1.18
+          - 1.18.3
           - ${{ inputs.go }}
         include:
           - arch: 386
