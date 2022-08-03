@@ -62,5 +62,5 @@ jobs:
         env:
           GOARCH: ${{ matrix.arch }}
           GOFLAGS: ${{ matrix.flags }}
-        run: go test --timeout 5m ./...
+        run: go test --timeout 30m ./...
 
