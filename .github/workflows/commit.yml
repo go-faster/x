@@ -1,7 +1,6 @@
 name: commit
 
-on:
-  workflow_call:
+on: [pull_request, workflow_call]
 
 jobs:
   lint:
