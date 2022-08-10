@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        flags: [""]
+        flags: [ "" ]
         arch:
           - amd64
         runner:
