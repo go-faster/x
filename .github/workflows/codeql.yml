@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       go:
-        description: 'Go version'
+        description: "Go version"
         default: 1.19
         required: false
         type: string
@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'go' ]
+        language: ["go"]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
         # Learn more about CodeQL language support at https://git.io/codeql-language-support
 
@@ -44,6 +44,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ inputs.go }}
+          cache: true
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
