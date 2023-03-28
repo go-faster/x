@@ -18,7 +18,23 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ inputs.go }}
-          cache: true
+          cache: false
+
+      - name: Get Go environment
+        id: go-env
+        run: |
+          echo "cache=$(go env GOCACHE)" >> $GITHUB_ENV
+          echo "modcache=$(go env GOMODCACHE)" >> $GITHUB_ENV
+
+      - name: Set up cache
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            ${{ env.cache }}
+            ${{ env.modcache }}
+          key: coverage-${{ runner.os }}-${{ runner.arch }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            coverage-${{ runner.os }}-${{ runner.arch }}-go-
 
       - name: Checkout code
         uses: actions/checkout@v3
