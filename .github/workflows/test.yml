@@ -7,9 +7,9 @@ on:
         default: "1.20.x"
         required: false
         type: string
-      disable-386:
-        description: "Exclude 386 from test matrix"
-        default: false
+      enable-386:
+        description: "Add 386 to test matrix"
+        default: true
         required: false
         type: boolean
 
@@ -30,10 +30,10 @@ jobs:
         go:
           - ${{ inputs.go }}
         include:
-          # Hacky expression: if disable-386 is true, value is '386'
+          # Hacky expression: if enable-386 is true, value is '386'
           # Otherwise, value is 'amd64'.
           # Actions runner would handle duplicate combination fine.
-          - arch: ${{ inputs.disable-386 && '386' || 'amd64' }}
+          - arch: ${{ inputs.enable-386 && '386' || 'amd64' }}
             runner: ubuntu-latest
             go: ${{ inputs.go }}
           - arch: amd64
