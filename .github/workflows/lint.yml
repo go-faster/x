@@ -48,7 +48,7 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-go-
 
       - name: Lint
-        uses: golangci/golangci-lint-action@v4.0.0
+        uses: golangci/golangci-lint-action@v5.1.0
         with:
           version: ${{ inputs.golangci-lint }}
           args: --timeout 30m
