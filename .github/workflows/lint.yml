@@ -52,12 +52,6 @@ jobs:
         with:
           version: ${{ inputs.golangci-lint }}
           args: --timeout 30m
-          # Package/build cache already provided by actions/setup-go.
-          #
-          # Disable module cache.
-          skip-pkg-cache: true
-          # Disable build cache.
-          skip-build-cache: true
 
   # Check if there are any dirty changes after go mod tidy
   mod:
