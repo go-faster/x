@@ -3,8 +3,8 @@ on:
   workflow_call:
     inputs:
       go:
-        description: 'Go version'
-        default: "1.21.x"
+        description: "Go version"
+        default: "oldstable"
         required: false
         type: string
 
