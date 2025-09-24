@@ -12,6 +12,11 @@ on:
         default: true
         required: false
         type: boolean
+      enable-arm64:
+        description: "Add arm64 to test matrix"
+        default: false
+        required: false
+        type: boolean
       submodules:
         description: "Whether to checkout submodules"
         default: true
@@ -32,6 +37,7 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
+          - ubuntu-latest${{ inputs.enable-arm64 && '-arm64' || '' }}
         go:
           - ${{ inputs.go }}
         include:
