@@ -37,7 +37,6 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
-          - ubuntu-latest${{ inputs.enable-arm64 && '-arm64' || '' }}
         go:
           - ${{ inputs.go }}
         include:
@@ -50,6 +49,9 @@ jobs:
           - arch: amd64
             runner: ubuntu-latest
             flags: "-race"
+            go: ${{ inputs.go }}
+          - arch: ${{ inputs.enable-arm64 && 'arm64' || 'amd64' }}
+            runner: ubuntu-latest${{ inputs.enable-arm64 && '-arm64' || '' }}
             go: ${{ inputs.go }}
     steps:
       - name: Checkout code
