@@ -42,7 +42,7 @@ jobs:
             coverage-${{ runner.os }}-${{ runner.arch }}-go-
 
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           submodules: ${{ inputs.submodules }}
 
@@ -63,7 +63,7 @@ jobs:
       - run
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Download artifact
         uses: actions/download-artifact@v7
