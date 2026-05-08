@@ -55,8 +55,8 @@ jobs:
 
   # Check if there are any dirty changes after go mod tidy
   mod:
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -94,8 +94,8 @@ jobs:
 
   # Check if there are any dirty changes after go generate
   gen:
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
