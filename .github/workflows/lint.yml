@@ -1,5 +1,4 @@
 name: lint
-
 on:
   workflow_call:
     inputs:
@@ -13,27 +12,23 @@ on:
         default: latest
         required: false
         type: string
-
 jobs:
   run:
-    timeout-minutes: 30
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-
       - name: Install Go
         uses: actions/setup-go@v6
         with:
           go-version: ${{ inputs.go }}
           cache: false
-
       - name: Get Go environment
         id: go-env
         run: |
           echo "cache=$(go env GOCACHE)" >> $GITHUB_ENV
           echo "modcache=$(go env GOMODCACHE)" >> $GITHUB_ENV
-
       # Notice: we're using read-only cache.
       #
       # See https://github.com/actions/setup-go/issues/357#issuecomment-1486486358
@@ -46,33 +41,28 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-go-
-
       - name: Lint
         uses: golangci/golangci-lint-action@v9.2.0
         with:
           version: ${{ inputs.golangci-lint }}
           args: --timeout 30m
-
   # Check if there are any dirty changes after go mod tidy
   mod:
-    runs-on: ubuntu-slim
-    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-
       - name: Install Go
         uses: actions/setup-go@v6
         with:
           go-version: ${{ inputs.go }}
           cache: false
-
       - name: Get Go environment
         id: go-env
         run: |
           echo "cache=$(go env GOCACHE)" >> $GITHUB_ENV
           echo "modcache=$(go env GOMODCACHE)" >> $GITHUB_ENV
-
       # Notice: we're using read-only cache.
       #
       # See https://github.com/actions/setup-go/issues/357#issuecomment-1486486358
@@ -85,33 +75,27 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-go-
-
       - name: Tidy
         run: go mod tidy
-
       - name: Check git diff
         run: git diff --exit-code
-
   # Check if there are any dirty changes after go generate
   gen:
-    runs-on: ubuntu-slim
-    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
-
       - name: Install Go
         uses: actions/setup-go@v6
         with:
           go-version: ${{ inputs.go }}
           cache: false
-
       - name: Get Go environment
         id: go-env
         run: |
           echo "cache=$(go env GOCACHE)" >> $GITHUB_ENV
           echo "modcache=$(go env GOMODCACHE)" >> $GITHUB_ENV
-
       # Notice: we're using read-only cache.
       #
       # See https://github.com/actions/setup-go/issues/357#issuecomment-1486486358
@@ -126,9 +110,7 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-go-
       - name: Generate
         run: go generate ./...
-
       - name: Check git diff
         run: git diff --exit-code
-
       - name: Check for untracked files
         run: test -z "$(git status --porcelain)"
