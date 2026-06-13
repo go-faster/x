@@ -159,7 +159,7 @@ test:
 
 ### `lint.yml`
 
-Runs `golangci-lint`, optional format check (`golangci-lint fmt`),
+Runs `golangci-lint` (including any formatter linters configured in `.golangci.yml`),
 `go mod tidy` diff check, and `go generate` diff check as separate jobs.
 
 | Input | Default | Description |
@@ -167,11 +167,10 @@ Runs `golangci-lint`, optional format check (`golangci-lint fmt`),
 | `go` | `oldstable` | Go version |
 | `golangci-lint` | `latest` | golangci-lint version |
 | `golangci-lint-args` | `""` | Extra arguments for `golangci-lint run` |
-| `enable-fmt` | `true` | Run `golangci-lint fmt --diff` |
 | `enable-mod` | `true` | Run `go mod tidy` diff check |
 | `enable-gen` | `true` | Run `go generate ./...` diff check |
 | `runner` | `ubuntu-latest` | Runner for the main lint job |
-| `runner-small` | `ubuntu-latest` | Runner for fmt/mod/gen jobs |
+| `runner-small` | `ubuntu-latest` | Runner for mod/gen jobs |
 | `timeout-minutes` | `30` | Job timeout (also sets the `golangci-lint --timeout` flag) |
 
 Example — skip generate check, pin lint version, use self-hosted runner for small jobs:

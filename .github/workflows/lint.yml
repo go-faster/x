@@ -17,11 +17,6 @@ on:
         default: ""
         required: false
         type: string
-      enable-fmt:
-        description: "Run golangci-lint fmt check"
-        default: true
-        required: false
-        type: boolean
       enable-mod:
         description: "Run go mod tidy check"
         default: true
@@ -38,7 +33,7 @@ on:
         required: false
         type: string
       runner-small:
-        description: "Runner for lightweight jobs (fmt, mod, gen)"
+        description: "Runner for lightweight jobs (mod, gen)"
         default: "ubuntu-latest"
         required: false
         type: string
@@ -83,39 +78,6 @@ jobs:
         with:
           version: ${{ inputs.golangci-lint }}
           args: --timeout ${{ inputs.timeout-minutes }}m ${{ inputs.golangci-lint-args }}
-
-  fmt:
-    if: ${{ inputs.enable-fmt }}
-    runs-on: ${{ inputs.runner-small }}
-    timeout-minutes: ${{ inputs.timeout-minutes }}
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
-      - name: Install Go
-        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
-        with:
-          go-version: ${{ inputs.go }}
-          cache: false
-      - name: Get Go environment
-        run: |
-          echo "cache=$(go env GOCACHE)" >> $GITHUB_ENV
-          echo "modcache=$(go env GOMODCACHE)" >> $GITHUB_ENV
-      - name: Set up cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: |
-            ${{ env.cache }}
-            ${{ env.modcache }}
-          key: ${{ runner.os }}-${{ runner.arch }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-go-
-      - name: Check formatting
-        uses: golangci/golangci-lint-action@82606bf257cbaff209d206a39f5134f0cfbfd2ee # v9.2.1
-        with:
-          version: ${{ inputs.golangci-lint }}
-          args: fmt --diff
 
   # Check if there are any dirty changes after go mod tidy
   mod:
