@@ -22,21 +22,35 @@ on:
         default: true
         required: false
         type: boolean
+      runners:
+        description: "JSON array of runners for the main test matrix"
+        default: '["ubuntu-latest", "macos-latest", "windows-latest"]'
+        required: false
+        type: string
+      test-args:
+        description: "Extra arguments for go test"
+        default: ""
+        required: false
+        type: string
+      timeout-minutes:
+        description: "Job timeout in minutes (minimum 15)"
+        default: 30
+        required: false
+        type: number
 
 jobs:
   run:
-    timeout-minutes: 30
+    timeout-minutes: ${{ inputs.timeout-minutes }}
     runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
     strategy:
       fail-fast: true
       matrix:
         flags: [""]
         arch:
           - amd64
-        runner:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
+        runner: ${{ fromJson(inputs.runners) }}
         go:
           - ${{ inputs.go }}
         include:
@@ -55,12 +69,12 @@ jobs:
             go: ${{ inputs.go }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           submodules: ${{ inputs.submodules }}
 
       - name: Install Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
         with:
           go-version: ${{ matrix.go }}
           cache: false
@@ -83,7 +97,7 @@ jobs:
         run: echo "cache_prefix=$RUNNER_PREFIX$ARCH_PREFIX$RACE_PREFIX" >> $GITHUB_ENV
 
       - name: Set up cache
-        uses: actions/cache@v5
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ${{ env.cache }}
@@ -96,4 +110,5 @@ jobs:
         env:
           GOARCH: ${{ matrix.arch }}
           GOFLAGS: ${{ matrix.flags }}
-        run: go test --timeout 30m ./...
+          TEST_ARGS: ${{ inputs.test-args }}
+        run: go test --timeout 30m $TEST_ARGS ./...

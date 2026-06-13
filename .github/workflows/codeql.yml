@@ -8,16 +8,22 @@ on:
         default: "oldstable"
         required: false
         type: string
+      timeout-minutes:
+        description: "Job timeout in minutes (minimum 15)"
+        default: 30
+        required: false
+        type: number
 
 jobs:
   analyze:
-    timeout-minutes: 30
+    timeout-minutes: ${{ inputs.timeout-minutes }}
     name: analyze
     runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
       security-events: write
+      packages: none
 
     strategy:
       fail-fast: false
@@ -28,20 +34,16 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       # Initializes the CodeQL tools for scanning.
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
+        uses: github/codeql-action/init@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4
         with:
           languages: ${{ matrix.language }}
-          # If you wish to specify custom queries, you can do so here or in a config file.
-          # By default, queries listed here will override any specified in a config file.
-          # Prefix the list here with "+" to use these queries and those in the config file.
-          # queries: ./path/to/local/query, your-org/your-repo/queries@main
 
       - name: Install Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
         with:
           go-version: ${{ inputs.go }}
           cache: false
@@ -56,7 +58,7 @@ jobs:
       #
       # See https://github.com/actions/setup-go/issues/357#issuecomment-1486486358
       - name: Set up cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ${{ env.cache }}
@@ -66,4 +68,4 @@ jobs:
             ${{ runner.os }}-${{ runner.arch }}-go-
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
+        uses: github/codeql-action/analyze@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4

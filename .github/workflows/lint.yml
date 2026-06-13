@@ -12,15 +12,52 @@ on:
         default: latest
         required: false
         type: string
+      golangci-lint-args:
+        description: "Extra arguments for golangci-lint run"
+        default: ""
+        required: false
+        type: string
+      enable-fmt:
+        description: "Run golangci-lint fmt check"
+        default: true
+        required: false
+        type: boolean
+      enable-mod:
+        description: "Run go mod tidy check"
+        default: true
+        required: false
+        type: boolean
+      enable-gen:
+        description: "Run go generate check"
+        default: true
+        required: false
+        type: boolean
+      runner:
+        description: "Runner for the main lint job"
+        default: "ubuntu-latest"
+        required: false
+        type: string
+      runner-small:
+        description: "Runner for lightweight jobs (fmt, mod, gen)"
+        default: "ubuntu-latest"
+        required: false
+        type: string
+      timeout-minutes:
+        description: "Job timeout in minutes (minimum 15)"
+        default: 30
+        required: false
+        type: number
 jobs:
   run:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - name: Install Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
         with:
           go-version: ${{ inputs.go }}
           cache: false
@@ -33,7 +70,7 @@ jobs:
       #
       # See https://github.com/actions/setup-go/issues/357#issuecomment-1486486358
       - name: Set up cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ${{ env.cache }}
@@ -42,19 +79,56 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-go-
       - name: Lint
-        uses: golangci/golangci-lint-action@v9.2.1
+        uses: golangci/golangci-lint-action@82606bf257cbaff209d206a39f5134f0cfbfd2ee # v9.2.1
         with:
           version: ${{ inputs.golangci-lint }}
-          args: --timeout 30m
-  # Check if there are any dirty changes after go mod tidy
-  mod:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+          args: --timeout ${{ inputs.timeout-minutes }}m ${{ inputs.golangci-lint-args }}
+
+  fmt:
+    if: ${{ inputs.enable-fmt }}
+    runs-on: ${{ inputs.runner-small }}
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - name: Install Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
+        with:
+          go-version: ${{ inputs.go }}
+          cache: false
+      - name: Get Go environment
+        run: |
+          echo "cache=$(go env GOCACHE)" >> $GITHUB_ENV
+          echo "modcache=$(go env GOMODCACHE)" >> $GITHUB_ENV
+      - name: Set up cache
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
+        with:
+          path: |
+            ${{ env.cache }}
+            ${{ env.modcache }}
+          key: ${{ runner.os }}-${{ runner.arch }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-go-
+      - name: Check formatting
+        uses: golangci/golangci-lint-action@82606bf257cbaff209d206a39f5134f0cfbfd2ee # v9.2.1
+        with:
+          version: ${{ inputs.golangci-lint }}
+          args: fmt --diff
+
+  # Check if there are any dirty changes after go mod tidy
+  mod:
+    if: ${{ inputs.enable-mod }}
+    runs-on: ${{ inputs.runner-small }}
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      - name: Install Go
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
         with:
           go-version: ${{ inputs.go }}
           cache: false
@@ -67,7 +141,7 @@ jobs:
       #
       # See https://github.com/actions/setup-go/issues/357#issuecomment-1486486358
       - name: Set up cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ${{ env.cache }}
@@ -79,15 +153,19 @@ jobs:
         run: go mod tidy
       - name: Check git diff
         run: git diff --exit-code
+
   # Check if there are any dirty changes after go generate
   gen:
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    if: ${{ inputs.enable-gen }}
+    runs-on: ${{ inputs.runner-small }}
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - name: Install Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
         with:
           go-version: ${{ inputs.go }}
           cache: false
@@ -100,7 +178,7 @@ jobs:
       #
       # See https://github.com/actions/setup-go/issues/357#issuecomment-1486486358
       - name: Set up cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ${{ env.cache }}

@@ -1,0 +1,31 @@
+name: govulncheck
+on:
+  workflow_call:
+    inputs:
+      go:
+        description: "Go version"
+        default: "oldstable"
+        required: false
+        type: string
+      timeout-minutes:
+        description: "Job timeout in minutes (minimum 15)"
+        default: 15
+        required: false
+        type: number
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+
+      - name: Run govulncheck
+        uses: golang/govulncheck-action@b625fbe08f3bccbe446d94fbf87fcc875a4f50ee # v1
+        with:
+          go-version-input: ${{ inputs.go }}
+          go-package: ./...

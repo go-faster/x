@@ -13,14 +13,31 @@ on:
         default: true
         required: false
         type: boolean
+      coverage-cmd:
+        description: "Command that produces profile.out"
+        default: "make coverage"
+        required: false
+        type: string
+      timeout-minutes:
+        description: "Job timeout in minutes (minimum 15)"
+        default: 30
+        required: false
+        type: number
 
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    permissions:
+      contents: read
     steps:
+      - name: Checkout code
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          submodules: ${{ inputs.submodules }}
+
       - name: Install Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # v6
         with:
           go-version: ${{ inputs.go }}
           cache: false
@@ -32,7 +49,7 @@ jobs:
           echo "modcache=$(go env GOMODCACHE)" >> $GITHUB_ENV
 
       - name: Set up cache
-        uses: actions/cache/restore@v5
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
         with:
           path: |
             ${{ env.cache }}
@@ -41,16 +58,31 @@ jobs:
           restore-keys: |
             coverage-${{ runner.os }}-${{ runner.arch }}-go-
 
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          submodules: ${{ inputs.submodules }}
+      - name: Verify coverage command
+        env:
+          COVERAGE_CMD: ${{ inputs.coverage-cmd }}
+        run: |
+          cmd="${COVERAGE_CMD%% *}"
+          if ! command -v "$cmd" >/dev/null 2>&1; then
+            echo "::error::Command not found: $cmd"
+            exit 1
+          fi
+          if [ "$cmd" = "make" ]; then
+            target="${COVERAGE_CMD#make }"
+            target="${target%% *}"
+            make -n "$target" >/dev/null 2>&1 || {
+              echo "::error::Makefile target '$target' not found — add a '$target' target to your Makefile"
+              exit 1
+            }
+          fi
 
       - name: Run tests with coverage
-        run: make coverage
+        env:
+          COVERAGE_CMD: ${{ inputs.coverage-cmd }}
+        run: $COVERAGE_CMD
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: coverage
           path: profile.out
@@ -59,19 +91,22 @@ jobs:
 
   send:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs:
       - run
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: Download artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
         with:
           name: coverage
 
       - name: Send coverage
-        uses: codecov/codecov-action@v7
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7
         with:
           files: profile.out
           fail_ci_if_error: true
