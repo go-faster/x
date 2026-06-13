@@ -37,7 +37,6 @@ jobs:
     uses: go-faster/x/.github/workflows/commit.yml@main
     permissions:
       contents: read
-      pull-requests: read
   govulncheck:
     uses: go-faster/x/.github/workflows/govulncheck.yml@main
     permissions:
