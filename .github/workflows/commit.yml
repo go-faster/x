@@ -6,11 +6,28 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    if: github.event.pull_request.user.login != 'dependabot[bot]'
+    if: github.actor != 'dependabot[bot]'
     permissions:
       contents: read
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
+      - name: Check for Dependabot commits
+        id: dependabot
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          range="HEAD^..HEAD"
+          if [ -n "$BASE_SHA" ] && [ -n "$HEAD_SHA" ]; then
+            range="$BASE_SHA..$HEAD_SHA"
+          fi
+
+          skip=false
+          if git log --format=%B "$range" | grep -Fq "Signed-off-by: dependabot[bot] <support@github.com>"; then
+            skip=true
+          fi
+          echo "skip=$skip" >> "$GITHUB_OUTPUT"
       - uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed # v6.2.1
+        if: steps.dependabot.outputs.skip != 'true'

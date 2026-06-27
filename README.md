@@ -221,7 +221,7 @@ Runs GitHub CodeQL static analysis for Go.
 ### `commit.yml`
 
 Lints commit messages against [Conventional Commits](https://www.conventionalcommits.org/)
-using `commitlint`. Skipped automatically for Dependabot PRs.
+using `commitlint`. Skipped automatically for Dependabot commits.
 
 ### `release.yml`
 
