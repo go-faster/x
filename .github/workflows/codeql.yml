@@ -42,24 +42,5 @@ jobs:
         with:
           languages: ${{ matrix.language }}
 
-      - name: Get Go environment
-        id: go-env
-        run: |
-          echo "cache=$(go env GOCACHE)" >> $GITHUB_ENV
-          echo "modcache=$(go env GOMODCACHE)" >> $GITHUB_ENV
-
-      # Notice: we're using read-only cache.
-      #
-      # See https://github.com/actions/setup-go/issues/357#issuecomment-1486486358
-      - name: Set up cache
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: |
-            ${{ env.cache }}
-            ${{ env.modcache }}
-          key: ${{ runner.os }}-${{ runner.arch }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-go-
-
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@54f647b7e1bb85c95cddabcd46b0c578ec92bc1a # v4
