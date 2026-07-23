@@ -7,6 +7,11 @@ on:
         default: "oldstable"
         required: false
         type: string
+      go-version-file:
+        description: "Path to a go.mod/go.work/.go-version/.tool-versions file to read the Go version from. Takes precedence over `go` when set."
+        default: ""
+        required: false
+        type: string
       enable-386:
         description: "Add 386 to test matrix"
         default: true
@@ -76,7 +81,10 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version: ${{ matrix.go }}
+          # go-version-file wins when set; setup-go treats an empty go-version
+          # as unset, and go-version would otherwise take precedence over it.
+          go-version: ${{ inputs.go-version-file == '' && matrix.go || '' }}
+          go-version-file: ${{ inputs.go-version-file }}
           cache: false
 
       - name: Get Go environment
