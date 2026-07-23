@@ -7,6 +7,11 @@ on:
         default: "oldstable"
         required: false
         type: string
+      go-version-file:
+        description: "Path to a go.mod/go.work/.go-version/.tool-versions file to read the Go version from. Takes precedence over `go` when set."
+        default: ""
+        required: false
+        type: string
       timeout-minutes:
         description: "Job timeout in minutes (minimum 15)"
         default: 15
@@ -27,5 +32,8 @@ jobs:
       - name: Run govulncheck
         uses: golang/govulncheck-action@b625fbe08f3bccbe446d94fbf87fcc875a4f50ee # v1
         with:
-          go-version-input: ${{ inputs.go }}
+          # go-version-file wins when set; leave go-version-input empty so it
+          # does not take precedence over the file.
+          go-version-input: ${{ inputs.go-version-file == '' && inputs.go || '' }}
+          go-version-file: ${{ inputs.go-version-file }}
           go-package: ./...
