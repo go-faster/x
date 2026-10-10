@@ -70,7 +70,7 @@ jobs:
             flags: "-race"
             go: ${{ inputs.go }}
           - arch: ${{ inputs.enable-arm64 && 'arm64' || 'amd64' }}
-            runner: ubuntu-latest${{ inputs.enable-arm64 && '-arm64' || '' }}
+            runner: ${{ inputs.enable-arm64 && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
             go: ${{ inputs.go }}
     steps:
       - name: Checkout code
