@@ -65,7 +65,7 @@ jobs:
           # --new-from-rev needs git history to diff against the base revision.
           fetch-depth: ${{ inputs.new-from-rev && 0 || 1 }}
       - name: Install Go
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
         with:
           # go-version-file wins when set; setup-go treats an empty go-version
           # as unset, and go-version would otherwise take precedence over it.
@@ -109,7 +109,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install Go
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
         with:
           # go-version-file wins when set; setup-go treats an empty go-version
           # as unset, and go-version would otherwise take precedence over it.
@@ -149,7 +149,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install Go
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
         with:
           # go-version-file wins when set; setup-go treats an empty go-version
           # as unset, and go-version would otherwise take precedence over it.
